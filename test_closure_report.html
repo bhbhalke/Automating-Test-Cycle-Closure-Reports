@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Money Transfer Test Cycle Closure Report</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172a32;
+      --muted: #53656c;
+      --paper: #f4f7f5;
+      --surface: #ffffff;
+      --line: #d7e1dc;
+      --accent: #176b58;
+      --critical: #a53d38;
+      --major: #a45b19;
+      --warning-bg: #fff3df;
+      --critical-bg: #f9e9e7;
+      --ok-bg: #e4f2ec;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    main { width: min(940px, calc(100% - 32px)); margin: 36px auto; }
+
+    header {
+      padding: 26px 30px;
+      border-top: 5px solid var(--accent);
+      background: var(--surface);
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    h1 { margin: 0; font-size: clamp(1.6rem, 5vw, 2.2rem); line-height: 1.2; }
+    h2 { margin: 24px 0 9px; font-size: 1.12rem; }
+    p { margin: 0 0 8px; }
+
+    .source { margin-top: 10px; color: var(--muted); font-size: 0.9rem; }
+
+    .decision {
+      margin-top: 18px;
+      padding: 14px 17px;
+      border-left: 4px solid var(--critical);
+      background: var(--critical-bg);
+    }
+
+    .decision strong { color: var(--critical); }
+
+    .panel, .table-wrap {
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .panel { padding: 14px 17px; }
+
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th, td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    thead th { background: #edf3ef; color: #31484a; font-size: 0.82rem; }
+    tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
+    tbody th { font-weight: 600; }
+    .metrics td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+    .defects { min-width: 680px; }
+    .table-wrap { overflow-x: auto; }
+    .critical { color: var(--critical); font-weight: 700; }
+    .major { color: var(--major); font-weight: 700; }
+    .minor { color: var(--muted); font-weight: 700; }
+    .not-met { color: var(--critical); font-weight: 700; }
+    .recommendations { margin: 0; padding: 14px 17px 14px 38px; }
+    .recommendations li + li { margin-top: 7px; }
+    .muted { color: var(--muted); font-size: 0.88rem; }
+    footer { margin: 20px 0; color: var(--muted); font-size: 0.84rem; }
+
+    @media (max-width: 560px) {
+      main { margin: 18px auto; }
+      header { padding: 21px 18px; }
+      th, td { padding: 8px 9px; }
+    }
+
+    @media print {
+      body { background: white; }
+      main { width: 100%; margin: 0; }
+      header, .panel, .table-wrap, .decision { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">Mobile Banking / Quality Assurance</p>
+      <h1>Money Transfer Test Cycle Closure Report</h1>
+      <p class="source">Source: <strong>test_data.csv</strong>. The requested <strong>test_results.csv</strong> was not present in the workspace. Test cycle date was not provided.</p>
+    </header>
+
+    <aside class="decision" aria-label="Closure decision">
+      <strong>Closure criteria not met.</strong>
+      <p>One Critical defect remains unresolved, and the executed-test pass rate is 64.3%, below the required 95%.</p>
+    </aside>
+
+    <section aria-labelledby="summary-heading">
+      <h2 id="summary-heading">1. Summary</h2>
+      <div class="panel">
+        <p>Fifteen money-transfer test cases were assessed: 9 passed, 5 failed, and 1 was blocked. Five defects were recorded, including one Critical issue affecting OTP authorization.</p>
+      </div>
+    </section>
+
+    <section aria-labelledby="scope-heading">
+      <h2 id="scope-heading">2. Scope and Objectives of the Test Cycle</h2>
+      <div class="panel">
+        <p>Validated transfers between own accounts and to payees; OTP and biometric authorization; limits and balance checks; network reliability and scheduling; transfer history and receipts; small-screen UI; session timeout; and peak-load performance.</p>
+        <p class="muted">Objective: assess transfer completion, transaction handling, user feedback, security-related controls, and responsiveness.</p>
+      </div>
+    </section>
+
+    <section aria-labelledby="metrics-heading">
+      <h2 id="metrics-heading">3. Execution Metrics</h2>
+      <div class="table-wrap">
+        <table class="metrics">
+          <thead><tr><th scope="col">Metric</th><th scope="col">Result</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Total test cases</th><td>15</td></tr>
+            <tr><th scope="row">Executed</th><td>14</td></tr>
+            <tr><th scope="row">Passed</th><td>9</td></tr>
+            <tr><th scope="row">Failed</th><td>5</td></tr>
+            <tr><th scope="row">Blocked</th><td>1</td></tr>
+            <tr><th scope="row">Pass rate (passed / executed)</th><td>64.3%</td></tr>
+            <tr><th scope="row">Pass rate (passed / total, including blocked)</th><td>60.0%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <footer>Pass-rate denominator for the exit criterion is executed tests: 9 / 14 = 64.3%. The 60.0% figure counts all planned cases.</footer>
+    </section>
+
+    <section aria-labelledby="defects-heading">
+      <h2 id="defects-heading">4. Defect Summary</h2>
+      <div class="table-wrap">
+        <table class="defects">
+          <thead>
+            <tr><th scope="col">Defect ID</th><th scope="col">Test ID</th><th scope="col">Severity</th><th scope="col">Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>DEF-101</td><td>TC03</td><td class="critical">Critical</td><td>OTP not received within 60 seconds for new-payee authorization.</td></tr>
+            <tr><td>DEF-102</td><td>TC06</td><td class="major">Major</td><td>Automatic retry during network loss caused a duplicate debit.</td></tr>
+            <tr><td>DEF-103</td><td>TC09</td><td class="minor">Minor</td><td>Confirm button hidden on 5-inch screens.</td></tr>
+            <tr><td>DEF-104</td><td>TC12</td><td class="major">Major</td><td>Invalid beneficiary account produced a generic error instead of field-level guidance.</td></tr>
+            <tr><td>DEF-105</td><td>TC15</td><td class="major">Major</td><td>Response time exceeded the 5-second target under 500-user load.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section aria-labelledby="insights-heading">
+      <h2 id="insights-heading">5. Key Insights</h2>
+      <div class="panel">
+        <ul class="recommendations">
+          <li>Transaction integrity is at risk: DEF-102 caused a duplicate debit; transfer-history test TC13 is blocked pending its fix.</li>
+          <li>The Critical OTP failure (DEF-101) can prevent new-payee transfers from completing.</li>
+          <li>Validation feedback, small-screen confirmation, and peak-load responsiveness also failed.</li>
+          <li>Daily-limit feedback (TC04), insufficient-balance handling (TC05), session timeout (TC11), and biometric approval (TC14) passed.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section aria-labelledby="recommendations-heading">
+      <h2 id="recommendations-heading">6. Recommendations</h2>
+      <div class="panel">
+        <ol class="recommendations">
+          <li><strong>Urgent:</strong> prevent duplicate debits on retries; fix DEF-102 and rerun TC06 and blocked TC13.</li>
+          <li><strong>Urgent:</strong> restore OTP delivery while retaining expiry, resend limits, and verification controls; fix DEF-101 and rerun TC03.</li>
+          <li><strong>High:</strong> meet the existing 5-second target at 500-user load; fix DEF-105 and rerun TC15.</li>
+          <li><strong>High:</strong> provide actionable beneficiary validation and responsive confirmation UI; fix DEF-104 and DEF-103, then rerun TC12 and TC09.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section aria-labelledby="risks-heading">
+      <h2 id="risks-heading">7. Open Risks and Blocked Tests</h2>
+      <div class="panel">
+        <ul class="recommendations">
+          <li><strong>TC13 is blocked</strong> until DEF-102 is fixed; transfer-history behavior remains unverified.</li>
+          <li><strong>DEF-101 is Critical and unresolved</strong> in this cycle; OTP authorization can fail.</li>
+          <li>DEF-102 also presents a customer-funds integrity risk. No fix-and-retest evidence is included for the five failed defects.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section aria-labelledby="exit-heading">
+      <h2 id="exit-heading">8. Exit Criteria Assessment</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">Exit criterion</th><th scope="col">Assessment</th><th scope="col">Evidence</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">No open Critical defects</th><td class="not-met">Not met</td><td>DEF-101 is Critical and failed in TC03.</td></tr>
+            <tr><th scope="row">Pass rate of at least 95%</th><td class="not-met">Not met</td><td>64.3% of executed tests passed (9/14).</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section aria-labelledby="release-heading">
+      <h2 id="release-heading">9. Release Recommendation</h2>
+      <div class="decision">
+        <strong>Do not recommend release based on this test cycle.</strong>
+        <p>Resolve the Critical OTP defect and duplicate-debit risk, clear and rerun TC13, address the remaining failures, and repeat the cycle until both exit criteria are met.</p>
+      </div>
+    </section>
+
+    <footer>Security-related recommendations address the OTP and transaction-integrity findings. No defect is classified under the Security module in the source data.</footer>
+  </main>
+</body>
+</html>

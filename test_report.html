@@ -1,0 +1,713 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Money Transfer QA Test Report</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172a32;
+      --muted: #53656c;
+      --paper: #f4f7f5;
+      --surface: #ffffff;
+      --line: #d7e1dc;
+      --accent: #176b58;
+      --accent-soft: #e4f2ec;
+      --critical: #a53d38;
+      --major: #a45b19;
+      --minor: #53656c;
+      --pass: #176b58;
+      --fail: #a53d38;
+      --blocked: #9a6a20;
+      --warning-soft: #fff3df;
+      --critical-soft: #f9e9e7;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    main {
+      width: min(1020px, calc(100% - 40px));
+      margin: 48px auto;
+    }
+
+    header {
+      padding: 28px 30px;
+      border-top: 5px solid var(--accent);
+      background: var(--surface);
+    }
+
+    .header-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .report-meta {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+      text-align: right;
+    }
+
+    .print-button {
+      margin-top: 18px;
+      padding: 9px 13px;
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: white;
+      font: inherit;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .print-button:hover { background: #105544; }
+
+    .assessment {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: start;
+      gap: 14px;
+      margin-top: 22px;
+      padding: 16px 18px;
+      border-left: 4px solid var(--blocked);
+      background: var(--warning-soft);
+    }
+
+    .assessment strong { display: block; }
+    .assessment p { margin: 3px 0 0; color: #4c4840; }
+
+    .assessment-label {
+      padding: 3px 8px;
+      background: #f1dfbd;
+      color: #68460f;
+      font-size: 0.75rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin: 22px 0 0;
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .metric { padding: 15px 18px; border-right: 1px solid var(--line); }
+    .metric:last-child { border-right: 0; }
+    .metric span { display: block; color: var(--muted); font-size: 0.82rem; }
+    .metric strong { display: block; margin-top: 3px; font-size: 1.55rem; line-height: 1.2; }
+    .metric .metric-pass { color: var(--pass); }
+    .metric .metric-fail { color: var(--fail); }
+    .metric .metric-blocked { color: var(--blocked); }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.7rem, 5vw, 2.3rem);
+      line-height: 1.15;
+    }
+
+    .source {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    section {
+      margin-top: 26px;
+    }
+
+    h2 {
+      margin: 0 0 10px;
+      font-size: 1.15rem;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .issue-table { min-width: 820px; }
+
+    .issue-table td:last-child {
+      min-width: 220px;
+      text-align: left;
+    }
+
+    .issue-table td:nth-child(1),
+    .issue-table td:nth-child(4),
+    .issue-table td:nth-child(5) { white-space: nowrap; }
+
+    .severity-tag, .status-tag {
+      display: inline-block;
+      padding: 2px 7px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .severity-critical { background: var(--critical-soft); color: var(--critical); }
+    .severity-major { background: var(--warning-soft); color: var(--major); }
+    .severity-minor { background: #edf1f2; color: var(--minor); }
+    .status-fail { background: var(--critical-soft); color: var(--fail); }
+    .status-blocked { background: var(--warning-soft); color: #68460f; }
+
+    .analysis-list {
+      border-top: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .finding {
+      display: grid;
+      grid-template-columns: minmax(170px, 0.7fr) 1.6fr;
+      gap: 20px;
+      padding: 17px 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .finding h3 { margin: 0; font-size: 1rem; }
+    .finding p { margin: 0; color: #34474e; }
+    .finding p + p { margin-top: 7px; }
+    .finding-refs { color: var(--accent); font-size: 0.85rem; font-weight: 700; }
+
+    .recommendation-list {
+      margin: 0;
+      padding: 0;
+      border-top: 1px solid var(--line);
+      background: var(--surface);
+      list-style: none;
+      counter-reset: recommendation;
+    }
+
+    .recommendation {
+      display: grid;
+      grid-template-columns: 110px minmax(0, 1fr);
+      gap: 18px;
+      padding: 18px;
+      border-bottom: 1px solid var(--line);
+      counter-increment: recommendation;
+    }
+
+    .recommendation-rank {
+      align-self: start;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .recommendation-rank::before { content: "#" counter(recommendation) " "; color: var(--ink); }
+
+    .priority-tag {
+      display: inline-block;
+      margin-top: 5px;
+      padding: 2px 7px;
+      background: var(--critical-soft);
+      color: var(--critical);
+      font-size: 0.74rem;
+      font-weight: 700;
+    }
+
+    .priority-p1 { background: var(--warning-soft); color: var(--major); }
+    .priority-p2 { background: #edf1f2; color: var(--minor); }
+    .recommendation h3 { margin: 0; font-size: 1rem; }
+    .recommendation p { margin: 6px 0 0; color: #34474e; }
+    .recommendation .recommendation-links { color: var(--accent); font-size: 0.84rem; font-weight: 700; }
+
+    @media (max-width: 640px) {
+      .finding { grid-template-columns: 1fr; gap: 6px; padding: 14px; }
+      .recommendation { grid-template-columns: 1fr; gap: 8px; padding: 14px; }
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th, td {
+      padding: 11px 15px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    th {
+      background: #edf3ef;
+      color: #31484a;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    tbody tr:last-child th,
+    tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    tbody th { font-weight: 600; }
+    td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+
+    .rate {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .critical { color: var(--critical); font-weight: 700; }
+    .major { color: var(--major); font-weight: 700; }
+    .minor { color: var(--minor); font-weight: 700; }
+
+    figure { margin: 0 0 18px; }
+
+    .chart {
+      display: grid;
+      gap: 10px;
+      max-width: 700px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .chart-row {
+      display: grid;
+      grid-template-columns: minmax(110px, 150px) minmax(80px, 1fr) 28px;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.9rem;
+    }
+
+    .chart-label { color: var(--muted); }
+
+    .bar-track {
+      height: 12px;
+      overflow: hidden;
+      background: #e7eeea;
+    }
+
+    .bar { display: block; height: 100%; }
+    .bar-pass { background: var(--pass); }
+    .bar-fail { background: var(--fail); }
+    .bar-blocked { background: var(--blocked); }
+    .bar-critical { background: var(--critical); }
+    .bar-major { background: var(--major); }
+    .bar-minor { background: #66787e; }
+    .bar-module { background: var(--accent); }
+
+    .stacked-track {
+      display: flex;
+      height: 14px;
+      overflow: hidden;
+      background: #e7eeea;
+    }
+
+    .stack-pass { background: var(--pass); }
+    .stack-fail { background: var(--fail); }
+    .stack-blocked { background: var(--blocked); }
+
+    .chart-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+    .legend-swatch { width: 10px; height: 10px; }
+
+    .runtime-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .runtime-metric { padding: 14px 16px; border-right: 1px solid var(--line); }
+    .runtime-metric:last-child { border-right: 0; }
+    .runtime-metric span { display: block; color: var(--muted); font-size: 0.82rem; }
+    .runtime-metric strong { display: block; margin-top: 3px; font-size: 1.2rem; }
+
+    .coverage-table { min-width: 520px; }
+
+    .chart-value {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+    }
+
+    figcaption {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    footer {
+      margin-top: 24px;
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    @media print {
+      body { background: white; }
+      main { width: 100%; margin: 0; }
+      header, .chart, .table-wrap, .metrics { break-inside: avoid; }
+      .print-button { display: none; }
+    }
+
+    @media (max-width: 520px) {
+      main { width: min(100% - 24px, 1020px); margin: 20px auto; }
+      header { padding: 22px 18px; }
+      .header-row { display: block; }
+      .report-meta { margin-top: 12px; text-align: left; }
+      .assessment { grid-template-columns: 1fr; gap: 8px; }
+      .assessment-label { justify-self: start; }
+      .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .metric:nth-child(2) { border-right: 0; }
+      .metric:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+      .runtime-metrics { grid-template-columns: 1fr; }
+      .runtime-metric { border-right: 0; border-bottom: 1px solid var(--line); }
+      .runtime-metric:last-child { border-bottom: 0; }
+      th, td { padding: 10px 11px; }
+      .chart { padding: 12px; }
+      .chart-row { grid-template-columns: minmax(92px, 115px) minmax(50px, 1fr) 24px; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="header-row">
+        <div>
+          <p class="eyebrow">Mobile Banking / Quality Assurance</p>
+          <h1>Money Transfer Test Report</h1>
+          <p class="source">Analysis source: <strong>test_data.csv</strong>. The requested <strong>test_results.csv</strong> was not present in the workspace.</p>
+        </div>
+        <p class="report-meta">Test run date: Not provided<br>Scope: Money transfer feature</p>
+      </div>
+      <button class="print-button" type="button" onclick="window.print()">Print report</button>
+    </header>
+
+    <aside class="assessment" aria-label="QA assessment">
+      <span class="assessment-label">ATTENTION REQUIRED</span>
+      <div>
+        <strong>Several issues remain in this test run.</strong>
+        <p>Five tests failed, including one Critical defect; one additional test is blocked pending DEF-102. This is a test assessment, not a release approval decision.</p>
+      </div>
+    </aside>
+
+    <div class="metrics" aria-label="Key test metrics">
+      <div class="metric"><span>Total cases</span><strong>15</strong></div>
+      <div class="metric"><span>Passed</span><strong class="metric-pass">9</strong></div>
+      <div class="metric"><span>Failed</span><strong class="metric-fail">5</strong></div>
+      <div class="metric"><span>Blocked</span><strong class="metric-blocked">1</strong></div>
+    </div>
+
+    <section aria-labelledby="summary-heading">
+      <h2 id="summary-heading">Execution Summary</h2>
+      <figure aria-label="Horizontal bar chart showing nine passed, five failed, and one blocked test out of fifteen">
+        <div class="chart">
+          <div class="chart-row"><span class="chart-label">Passed</span><span class="bar-track"><span class="bar bar-pass" style="width: 60%"></span></span><span class="chart-value">9</span></div>
+          <div class="chart-row"><span class="chart-label">Failed</span><span class="bar-track"><span class="bar bar-fail" style="width: 33.3%"></span></span><span class="chart-value">5</span></div>
+          <div class="chart-row"><span class="chart-label">Blocked</span><span class="bar-track"><span class="bar bar-blocked" style="width: 6.7%"></span></span><span class="chart-value">1</span></div>
+        </div>
+        <figcaption>Test outcomes, scaled to all 15 test cases.</figcaption>
+      </figure>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th scope="col">Metric</th><th scope="col">Result</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Total test cases</th><td>15</td></tr>
+            <tr><th scope="row">Passed</th><td>9</td></tr>
+            <tr><th scope="row">Failed</th><td>5</td></tr>
+            <tr><th scope="row">Blocked</th><td>1</td></tr>
+            <tr><th scope="row">Pass rate (excludes blocked)</th><td class="rate">64.3%</td></tr>
+            <tr><th scope="row">Pass rate (includes blocked)</th><td class="rate">60.0%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <footer>Executed-test pass rate = 9 passed / 14 executed. Overall pass rate = 9 passed / 15 total.</footer>
+    </section>
+
+    <section aria-labelledby="priority-heading">
+      <h2 id="priority-heading">Coverage by Priority</h2>
+      <figure aria-label="Stacked bars showing High priority: six passed and three failed; Medium: two passed, two failed, one blocked; Low: one passed">
+        <div class="chart">
+          <div class="chart-row"><span class="chart-label">High · 9 tests</span><span class="stacked-track"><span class="stack-pass" style="width: 66.7%"></span><span class="stack-fail" style="width: 33.3%"></span></span><span class="chart-value">9</span></div>
+          <div class="chart-row"><span class="chart-label">Medium · 5 tests</span><span class="stacked-track"><span class="stack-pass" style="width: 40%"></span><span class="stack-fail" style="width: 40%"></span><span class="stack-blocked" style="width: 20%"></span></span><span class="chart-value">5</span></div>
+          <div class="chart-row"><span class="chart-label">Low · 1 test</span><span class="stacked-track"><span class="stack-pass" style="width: 100%"></span></span><span class="chart-value">1</span></div>
+          <div class="chart-legend" aria-label="Chart legend">
+            <span class="legend-item"><span class="legend-swatch stack-pass"></span>Passed</span>
+            <span class="legend-item"><span class="legend-swatch stack-fail"></span>Failed</span>
+            <span class="legend-item"><span class="legend-swatch stack-blocked"></span>Blocked</span>
+          </div>
+        </div>
+        <figcaption>Each bar shows the outcome mix within that priority group.</figcaption>
+      </figure>
+      <div class="table-wrap">
+        <table class="coverage-table">
+          <thead>
+            <tr><th scope="col">Priority</th><th scope="col">Total</th><th scope="col">Passed</th><th scope="col">Failed</th><th scope="col">Blocked</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">High</th><td>9</td><td>6</td><td>3</td><td>0</td></tr>
+            <tr><th scope="row">Medium</th><td>5</td><td>2</td><td>2</td><td>1</td></tr>
+            <tr><th scope="row">Low</th><td>1</td><td>1</td><td>0</td><td>0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section aria-labelledby="runtime-heading">
+      <h2 id="runtime-heading">Execution Time</h2>
+      <div class="runtime-metrics" aria-label="Execution time summary">
+        <div class="runtime-metric"><span>Executed test cases</span><strong>14</strong></div>
+        <div class="runtime-metric"><span>Recorded case time, total</span><strong>74.1 sec</strong></div>
+        <div class="runtime-metric"><span>Recorded case time, median</span><strong>2.3 sec</strong></div>
+      </div>
+      <footer>Total is the sum of the ExecutionTimeSec values for all rows; the blocked case contributes 0. This sum is not necessarily the suite's wall-clock runtime.</footer>
+    </section>
+
+    <section aria-labelledby="severity-heading">
+      <h2 id="severity-heading">Defects by Severity</h2>
+      <figure aria-label="Horizontal bar chart showing one critical, three major, and one minor defect">
+        <div class="chart">
+          <div class="chart-row"><span class="chart-label">Critical</span><span class="bar-track"><span class="bar bar-critical" style="width: 33.3%"></span></span><span class="chart-value">1</span></div>
+          <div class="chart-row"><span class="chart-label">Major</span><span class="bar-track"><span class="bar bar-major" style="width: 100%"></span></span><span class="chart-value">3</span></div>
+          <div class="chart-row"><span class="chart-label">Minor</span><span class="bar-track"><span class="bar bar-minor" style="width: 33.3%"></span></span><span class="chart-value">1</span></div>
+        </div>
+        <figcaption>Defect counts, scaled to the highest severity count of three.</figcaption>
+      </figure>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th scope="col">Severity</th><th scope="col">Defects</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row" class="critical">Critical</th><td>1</td></tr>
+            <tr><th scope="row" class="major">Major</th><td>3</td></tr>
+            <tr><th scope="row" class="minor">Minor</th><td>1</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section aria-labelledby="module-heading">
+      <h2 id="module-heading">Failed Tests by Module</h2>
+      <figure aria-label="Horizontal bar chart showing one failed test each in Authentication, Performance, Reliability, UI, and Validation">
+        <div class="chart">
+          <div class="chart-row"><span class="chart-label">Authentication</span><span class="bar-track"><span class="bar bar-module" style="width: 100%"></span></span><span class="chart-value">1</span></div>
+          <div class="chart-row"><span class="chart-label">Performance</span><span class="bar-track"><span class="bar bar-module" style="width: 100%"></span></span><span class="chart-value">1</span></div>
+          <div class="chart-row"><span class="chart-label">Reliability</span><span class="bar-track"><span class="bar bar-module" style="width: 100%"></span></span><span class="chart-value">1</span></div>
+          <div class="chart-row"><span class="chart-label">UI</span><span class="bar-track"><span class="bar bar-module" style="width: 100%"></span></span><span class="chart-value">1</span></div>
+          <div class="chart-row"><span class="chart-label">Validation</span><span class="bar-track"><span class="bar bar-module" style="width: 100%"></span></span><span class="chart-value">1</span></div>
+        </div>
+        <figcaption>Failed-test counts by module, scaled to the highest module count of one.</figcaption>
+      </figure>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th scope="col">Module</th><th scope="col">Total</th><th scope="col">Passed</th><th scope="col">Failed</th><th scope="col">Blocked</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Authentication</th><td>2</td><td>1</td><td>1</td><td>0</td></tr>
+            <tr><th scope="row">Performance</th><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+            <tr><th scope="row">Reliability</th><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+            <tr><th scope="row">Security</th><td>1</td><td>1</td><td>0</td><td>0</td></tr>
+            <tr><th scope="row">Transfer</th><td>5</td><td>4</td><td>0</td><td>1</td></tr>
+            <tr><th scope="row">UI</th><td>2</td><td>1</td><td>1</td><td>0</td></tr>
+            <tr><th scope="row">Validation</th><td>3</td><td>2</td><td>1</td><td>0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section aria-labelledby="issues-heading">
+      <h2 id="issues-heading">Failed and Blocked Test Cases</h2>
+      <div class="table-wrap">
+        <table class="issue-table">
+          <thead>
+            <tr>
+              <th scope="col">Test ID</th>
+              <th scope="col">Test case</th>
+              <th scope="col">Module</th>
+              <th scope="col">Status</th>
+              <th scope="col">Priority</th>
+              <th scope="col">Defect / severity</th>
+              <th scope="col">Observed result</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>TC03</td><td>Transfer to a new payee with OTP</td><td>Authentication</td>
+              <td><span class="status-tag status-fail">Fail</span></td><td>High</td>
+              <td>DEF-101<br><span class="severity-tag severity-critical">Critical</span></td>
+              <td>OTP not received within 60 seconds.</td>
+            </tr>
+            <tr>
+              <td>TC06</td><td>Transfer during network loss</td><td>Reliability</td>
+              <td><span class="status-tag status-fail">Fail</span></td><td>High</td>
+              <td>DEF-102<br><span class="severity-tag severity-major">Major</span></td>
+              <td>Duplicate debit after automatic retry.</td>
+            </tr>
+            <tr>
+              <td>TC09</td><td>Confirmation screen on small devices</td><td>UI</td>
+              <td><span class="status-tag status-fail">Fail</span></td><td>Medium</td>
+              <td>DEF-103<br><span class="severity-tag severity-minor">Minor</span></td>
+              <td>Confirm button hidden on 5-inch screens.</td>
+            </tr>
+            <tr>
+              <td>TC12</td><td>Invalid beneficiary account number</td><td>Validation</td>
+              <td><span class="status-tag status-fail">Fail</span></td><td>Medium</td>
+              <td>DEF-104<br><span class="severity-tag severity-major">Major</span></td>
+              <td>Generic error instead of field-level message.</td>
+            </tr>
+            <tr>
+              <td>TC15</td><td>Transfer under peak load of 500 users</td><td>Performance</td>
+              <td><span class="status-tag status-fail">Fail</span></td><td>High</td>
+              <td>DEF-105<br><span class="severity-tag severity-major">Major</span></td>
+              <td>Response time above the 5-second target.</td>
+            </tr>
+            <tr>
+              <td>TC13</td><td>Transfer history update</td><td>Transfer</td>
+              <td><span class="status-tag status-blocked">Blocked</span></td><td>Medium</td>
+              <td>Blocked by DEF-102</td>
+              <td>Blocked until DEF-102 is fixed.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <footer>Severity, priority, execution status, and observations are reported as recorded in the source CSV.</footer>
+    </section>
+
+    <section aria-labelledby="failure-analysis-heading">
+      <h2 id="failure-analysis-heading">Failure Points, UI &amp; System Responses</h2>
+      <div class="analysis-list">
+        <article class="finding">
+          <div>
+            <h3>OTP delivery interrupts new-payee authorization</h3>
+            <p class="finding-refs">TC03 · DEF-101 · Critical</p>
+          </div>
+          <div>
+            <p><strong>Observed system response:</strong> The OTP was not received within 60 seconds.</p>
+            <p><strong>User impact:</strong> The user may be unable to authorize and complete a transfer to a new payee during the tested window.</p>
+          </div>
+        </article>
+        <article class="finding">
+          <div>
+            <h3>Automatic retry can result in a duplicate debit</h3>
+            <p class="finding-refs">TC06 · DEF-102 · Major</p>
+          </div>
+          <div>
+            <p><strong>Observed system response:</strong> A transfer during network loss was debited twice after an automatic retry.</p>
+            <p><strong>User impact:</strong> This creates a transaction-integrity risk. The related transfer-history test, TC13, is blocked until DEF-102 is fixed, so its behavior remains unverified.</p>
+          </div>
+        </article>
+        <article class="finding">
+          <div>
+            <h3>Small-screen layout hides the confirmation action</h3>
+            <p class="finding-refs">TC09 · DEF-103 · Minor</p>
+          </div>
+          <div>
+            <p><strong>Observed UI behavior:</strong> The confirm button is hidden on 5-inch screens.</p>
+            <p><strong>User impact:</strong> Users on affected devices may not be able to reach the final confirmation step.</p>
+          </div>
+        </article>
+        <article class="finding">
+          <div>
+            <h3>Validation feedback is inconsistent</h3>
+            <p class="finding-refs">TC12 · DEF-104 · Major; TC04 · Pass</p>
+          </div>
+          <div>
+            <p><strong>Observed system response:</strong> For an invalid beneficiary account number, the app shows a generic error instead of a field-level message. In contrast, TC04 passed and its note records that the daily-limit error was shown correctly.</p>
+            <p><strong>User impact:</strong> On the invalid-account path, users receive less guidance about what to correct than on the tested daily-limit path.</p>
+          </div>
+        </article>
+        <article class="finding">
+          <div>
+            <h3>Peak-load response exceeds the target</h3>
+            <p class="finding-refs">TC15 · DEF-105 · Major</p>
+          </div>
+          <div>
+            <p><strong>Observed system response:</strong> Under a load of 500 users, response time exceeded the 5-second target; the test execution time recorded in the CSV is 12.4 seconds.</p>
+            <p><strong>User impact:</strong> Transfers may feel slow under the tested peak-load condition.</p>
+          </div>
+        </article>
+      </div>
+      <footer>User impacts above are interpretations of the recorded test observations, not additional test results.</footer>
+    </section>
+
+    <section aria-labelledby="recommendations-heading">
+      <h2 id="recommendations-heading">Strategic Recommendations</h2>
+      <p class="source">Ranked by potential customer and financial impact, then by the severity and reach of the observed issue.</p>
+      <ol class="recommendation-list">
+        <li class="recommendation">
+          <div class="recommendation-rank">Priority <span class="priority-tag">P0 · Urgent</span></div>
+          <div>
+            <h3>Guarantee one debit outcome across retries</h3>
+            <p>Make transfer retries idempotent and preserve an authoritative transaction state when connectivity is interrupted. Reconcile uncertain outcomes before allowing another debit or presenting completion to the user.</p>
+            <p><strong>Validate:</strong> Repeat requests before and after transaction commit; each transfer must produce at most one debit and one canonical result. Re-run the blocked transfer-history check after the fix.</p>
+            <p class="recommendation-links">Addresses DEF-102 (TC06); unblocks TC13.</p>
+          </div>
+        </li>
+        <li class="recommendation">
+          <div class="recommendation-rank">Priority <span class="priority-tag">P0 · Urgent</span></div>
+          <div>
+            <h3>Make OTP delivery reliable without weakening authorization</h3>
+            <p>Instrument OTP issuance, delivery, and verification end to end; give users a clear wait and recovery path with bounded resend, expiry, and attempt controls. Do not treat a transfer as authorized until valid verification succeeds.</p>
+            <p><strong>Validate:</strong> Exercise delayed and failed delivery, resend, expiration, and repeated-code attempts. Confirm that recovery is understandable and unauthorized transfers cannot proceed.</p>
+            <p class="recommendation-links">Addresses DEF-101 (TC03, Critical).</p>
+          </div>
+        </li>
+        <li class="recommendation">
+          <div class="recommendation-rank">Priority <span class="priority-tag priority-p1">P1 · High</span></div>
+          <div>
+            <h3>Meet the response-time target under peak load</h3>
+            <p>Profile the transfer path at the tested 500-user load, identify the dominant bottleneck, and optimize it while monitoring timeouts and failed transactions alongside latency.</p>
+            <p><strong>Validate:</strong> Re-run the 500-user scenario and meet the existing 5-second response-time target; report latency distribution and transaction success rate.</p>
+            <p class="recommendation-links">Addresses DEF-105 (TC15).</p>
+          </div>
+        </li>
+        <li class="recommendation">
+          <div class="recommendation-rank">Priority <span class="priority-tag priority-p1">P1 · High</span></div>
+          <div>
+            <h3>Make beneficiary validation specific and recoverable</h3>
+            <p>Show an actionable message next to the invalid account field, retain the entered form state, and prevent submission until the value is corrected. Keep validation behavior consistent with the correctly displayed daily-limit response.</p>
+            <p><strong>Validate:</strong> Re-run invalid beneficiary, daily-limit, and insufficient-balance cases; each response should identify the issue without creating a transfer.</p>
+            <p class="recommendation-links">Addresses DEF-104 (TC12); regression checks TC04 and TC05.</p>
+          </div>
+        </li>
+        <li class="recommendation">
+          <div class="recommendation-rank">Priority <span class="priority-tag priority-p2">P2 · Planned</span></div>
+          <div>
+            <h3>Keep confirmation visible and usable on small screens</h3>
+            <p>Revise the confirmation layout so the primary action remains visible or reachable by scrolling, with the amount and payee details still clear before confirmation.</p>
+            <p><strong>Validate:</strong> Check the supported device and text-size range, including the 5-inch case, and confirm the action works with touch and accessibility navigation.</p>
+            <p class="recommendation-links">Addresses DEF-103 (TC09).</p>
+          </div>
+        </li>
+      </ol>
+      <footer>Security-related recommendations are tied to the OTP authorization and duplicate-debit findings. The source CSV records no defect in the Security module; TC11 (session timeout) passed.</footer>
+    </section>
+  </main>
+</body>
+</html>
